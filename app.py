@@ -22,11 +22,12 @@ class Api:
         result = self.window.create_file_dialog(
             webview.OPEN_DIALOG,
             allow_multiple=False,
-            file_types=('Markdown Files (*.md *.markdown)', 'All Files (*.*)')
+            file_types=('Markdown Files (*.md;*.markdown)', 'All Files (*.*)')
         )
         if result:
             return self.read_file(result[0])
         return json.dumps({'cancelled': True})
+
 
 
 def main():

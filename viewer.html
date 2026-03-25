@@ -650,15 +650,7 @@ kbd {
     인쇄
   </button>
 
-  <button id="btn-export" class="btn btn-def" onclick="exportHtml()" style="display:none">
-    <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-      <path d="M8 1.5H3a1 1 0 00-1 1v8a1 1 0 001 1h7a1 1 0 001-1V5L8 1.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
-      <path d="M8 1.5V5H11.5" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
-    </svg>
-    내보내기
-  </button>
-
-  <button class="btn btn-icon" onclick="toggleToc()" title="목차">
+<button class="btn btn-icon" onclick="toggleToc()" title="목차">
     <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
       <line x1="3" y1="4.5" x2="12" y2="4.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
       <line x1="3" y1="7.5" x2="12" y2="7.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
@@ -749,6 +741,7 @@ const sysDark = window.matchMedia('(prefers-color-scheme: dark)');
 
 /* ── pywebview ── */
 async function openFile() {
+  if (!window.pywebview) return;
   try {
     const data = JSON.parse(await window.pywebview.api.open_file_dialog());
     if (data.content !== undefined) load(data);
@@ -785,7 +778,6 @@ function render(text, filename) {
   stats(text);
   buildToc();
   document.getElementById('btn-print').style.display  = '';
-  document.getElementById('btn-export').style.display = '';
 }
 
 function stats(text) {
@@ -862,35 +854,6 @@ function toggleTheme() {
 }
 
 sysDark.addEventListener('change', () => { if (theme === 'auto') applyTheme(); });
-
-function exportHtml() {
-  const fname = document.getElementById('file-name').textContent.replace(/\.md$/i,'');
-  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${fname}</title>
-<style>
-body{max-width:740px;margin:48px auto;font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:15px;line-height:1.75;color:#212529;padding:0 20px}
-h1,h2,h3,h4{font-weight:600;letter-spacing:-.3px;margin-top:2em;margin-bottom:.6em}
-h1{font-size:1.95em;font-weight:700;border-bottom:1px solid #dee2e6;padding-bottom:.3em;margin-top:0}
-h2{font-size:1.4em;border-bottom:1px solid #dee2e6;padding-bottom:.25em}
-a{color:#228be6;text-decoration:none;border-bottom:1px solid #74c0fc}
-code{background:#f1f3f5;border:1px solid #dee2e6;padding:1px 6px;border-radius:2px;font-size:.875em}
-pre{background:#f1f3f5;border:1px solid #dee2e6;border-radius:8px;padding:16px;overflow:auto;margin:1.2em 0}
-pre code{background:none;border:none;padding:0}
-blockquote{border-left:3px solid #228be6;margin:1.2em 0;padding:8px 16px;background:#e7f5ff;border-radius:0 4px 4px 0;color:#495057}
-blockquote p{margin:0}
-table{width:100%;border-collapse:collapse;font-size:13px;border:1px solid #dee2e6;border-radius:4px;overflow:hidden;margin:1.2em 0}
-th,td{padding:9px 12px;border-bottom:1px solid #dee2e6;text-align:left}
-th{background:#f1f3f5;font-size:11px;text-transform:uppercase;letter-spacing:.3px;color:#868e96;font-weight:600}
-tr:last-child td{border-bottom:none}
-img{max-width:100%;border-radius:8px;border:1px solid #dee2e6}
-hr{border:none;border-top:1px solid #dee2e6;margin:2em 0}
-</style></head><body>${document.getElementById('content').innerHTML}</body></html>`;
-  const url = URL.createObjectURL(new Blob([html], {type:'text/html'}));
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = fname + '.html';
-  a.click();
-  URL.revokeObjectURL(url);
-}
 
 /* ── Drag & Drop ── */
 function onDragOver(e) { e.preventDefault(); document.getElementById('drop-overlay').classList.add('on'); }
