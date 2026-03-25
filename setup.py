@@ -9,11 +9,11 @@ DATA_FILES = [('', ['viewer.html'])]
 
 OPTIONS = {
     'argv_emulation': True,          # 파일 더블클릭으로 열기 지원
-    'iconfile': 'icon.icns',         # 아이콘 (없으면 제거해도 됨)
+    'iconfile': 'icon.icns',
     'plist': {
-        'CFBundleName': 'MDView',
-        'CFBundleDisplayName': 'MDView',
-        'CFBundleIdentifier': 'com.mdview.app',
+        'CFBundleName': 'MDViewer',
+        'CFBundleDisplayName': 'MDViewer',
+        'CFBundleIdentifier': 'com.mdviewr.app',
         'CFBundleVersion': '1.0.0',
         'CFBundleShortVersionString': '1.0',
         # .md / .markdown 파일을 이 앱으로 열 수 있도록 등록
@@ -35,7 +35,7 @@ OPTIONS = {
 
 setup(
     app=APP,
-    name='MDView',
+    name='MDViewer',
     data_files=DATA_FILES,
     options={'py2app': OPTIONS},
     setup_requires=['py2app'],

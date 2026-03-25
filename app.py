@@ -39,7 +39,7 @@ def main():
             initial_file = path
 
     window = webview.create_window(
-        'Markdown Viewer',
+        'MDViewer',
         VIEWER_HTML,
         width=1100,
         height=800,

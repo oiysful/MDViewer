@@ -1,0 +1,23 @@
+# py2app build artifacts
+build/
+dist/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+venv/
+.venv/
+*.egg-info/
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Claude Code local settings
+.claude/
+
+# Dev scratch files
+*.iconset/
+preview_*.png
+
