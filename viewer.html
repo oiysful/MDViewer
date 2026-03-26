@@ -772,7 +772,9 @@ function render(text, filename) {
   });
 
   // file badge
-  document.getElementById('file-name').textContent = filename || 'untitled.md';
+  const fname = filename || 'untitled.md';
+  document.getElementById('file-name').textContent = fname;
+  document.title = fname.replace(/\.md$/i, '');
   document.getElementById('file-badge').classList.add('on');
 
   stats(text);

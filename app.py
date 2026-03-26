@@ -20,7 +20,7 @@ class Api:
 
     def open_file_dialog(self):
         result = self.window.create_file_dialog(
-            webview.OPEN_DIALOG,
+            webview.FileDialog.OPEN,
             allow_multiple=False,
             file_types=('Markdown Files (*.md;*.markdown)', 'All Files (*.*)')
         )

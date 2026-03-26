@@ -1,6 +1,8 @@
 # py2app build artifacts
 build/
 dist/
+bin/
+lib/
 
 # Python
 __pycache__/
