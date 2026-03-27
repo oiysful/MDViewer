@@ -8,7 +8,7 @@ APP = ['app.py']
 DATA_FILES = [('', ['viewer.html'])]
 
 OPTIONS = {
-    'argv_emulation': True,          # 파일 더블클릭으로 열기 지원
+    'argv_emulation': False,         # odoc Apple Event handler로 직접 처리
     'iconfile': 'icon.icns',
     'plist': {
         'CFBundleName': 'MDViewer',

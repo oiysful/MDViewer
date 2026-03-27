@@ -253,7 +253,7 @@ html, body {
 .btn-icon:hover { background: var(--hover); color: var(--text); }
 
 /* ════════════════════════════════════════
-   Mantine AppShell — Navbar (TOC)
+   Mantine AppShell — Navbar (Sidebar)
 ════════════════════════════════════════ */
 #layout {
   display: flex;
@@ -261,20 +261,57 @@ html, body {
   padding-top: 56px;
 }
 
-#toc {
-  width: 220px;
-  min-width: 220px;
+#sidebar {
+  width: 240px;
+  min-width: 240px;
   background: var(--surface);
   border-right: 1px solid var(--border);
-  overflow-y: auto;
-  padding: var(--sp-md) 0 var(--sp-xl);
+  display: flex;
+  flex-direction: column;
   transition: width .2s, min-width .2s, opacity .15s;
   flex-shrink: 0;
+  overflow: hidden;
 }
-#toc.closed { width: 0; min-width: 0; opacity: 0; overflow: hidden; padding: 0; }
+#sidebar.closed { width: 0; min-width: 0; opacity: 0; }
 
-#toc::-webkit-scrollbar { width: 4px; }
-#toc::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+/* ── Sidebar tab strip ── */
+#sidebar-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  padding: 6px 8px 0;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.tab-btn {
+  height: 26px;
+  padding: 0 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .2px;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  border: 1px solid transparent;
+  border-bottom: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: color .1s, background .1s;
+}
+.tab-btn.active {
+  background: var(--bg);
+  border-color: var(--border);
+  color: var(--text);
+}
+.tab-btn:not(.active):hover { color: var(--text); }
+
+/* ── TOC panel ── */
+#panel-toc {
+  overflow-y: auto;
+  flex: 1;
+  padding: var(--sp-md) 0 var(--sp-xl);
+}
+#panel-toc::-webkit-scrollbar { width: 4px; }
+#panel-toc::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
 .toc-label {
   font-size: 11px;
@@ -286,6 +323,78 @@ html, body {
 }
 
 #toc-list { list-style: none; }
+
+/* ── Explorer panel ── */
+#panel-explorer {
+  display: none;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+#explorer-root-label {
+  padding: 7px var(--sp-md);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-dimmed);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+}
+#explorer-tree {
+  overflow-y: auto;
+  flex: 1;
+  padding: var(--sp-xs) 0;
+}
+#explorer-tree::-webkit-scrollbar { width: 4px; }
+#explorer-tree::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* ── File tree items ── */
+.tree-item {
+  cursor: pointer;
+  user-select: none;
+}
+.tree-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px var(--sp-md);
+  font-size: 12.5px;
+  color: var(--text-muted);
+  transition: background .1s, color .1s;
+}
+.tree-row:hover { background: var(--hover); color: var(--text); }
+.tree-item.active > .tree-row {
+  background: var(--accent-light);
+  color: var(--accent);
+}
+.tree-dir > .tree-row { color: var(--text); font-weight: 500; }
+.tree-arrow {
+  font-size: 8px;
+  width: 10px;
+  flex-shrink: 0;
+  color: var(--text-dimmed);
+  transition: transform .1s;
+}
+.tree-icon { font-size: 12px; flex-shrink: 0; }
+.tree-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+.tree-children {
+  display: none;
+  padding-left: 14px;
+}
+.tree-children.open { display: block; }
+.tree-hint {
+  padding: 8px var(--sp-md);
+  font-size: 11px;
+  color: var(--text-dimmed);
+  line-height: 1.6;
+}
 
 /* Mantine NavLink */
 #toc-list a {
@@ -586,7 +695,7 @@ kbd {
 
 /* ── Print ── */
 @media print {
-  #toolbar, #toc, #go-top, .code-header { display: none !important; }
+  #toolbar, #sidebar, #go-top, .code-header { display: none !important; }
   #layout { padding-top: 0; display: block; }
   #scroll-area { overflow: visible; padding: 0; }
   #content { max-width: 100%; }
@@ -600,7 +709,7 @@ kbd {
 
 @media (max-width: 700px) {
   #scroll-area { padding: var(--sp-lg) var(--sp-md) 60px; }
-  #toc { display: none; }
+  #sidebar { display: none; }
 }
 </style>
 </head>
@@ -632,6 +741,21 @@ kbd {
     <span class="sep">·</span>
     <span id="s-time">—</span>
   </div>
+
+  <button class="btn btn-def" onclick="newWindow()" title="새 창 열기">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+      <rect x="1.5" y="3" width="8" height="7" rx="1" stroke="currentColor" stroke-width="1.3"/>
+      <path d="M4 1.5h6a1 1 0 011 1v7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    새 창
+  </button>
+
+  <button class="btn btn-def" onclick="openFolder()">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+      <path d="M1.5 4.5v5a1 1 0 001 1h8a1 1 0 001-1v-4a1 1 0 00-1-1H6L4.5 3H2.5a1 1 0 00-1 1.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+    </svg>
+    폴더 열기
+  </button>
 
   <button class="btn btn-fill" onclick="openFile()">
     <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
@@ -690,9 +814,23 @@ kbd {
 
 <!-- Layout -->
 <div id="layout">
-  <nav id="toc">
-    <div class="toc-label">목차</div>
-    <ul id="toc-list"></ul>
+  <nav id="sidebar">
+    <div id="sidebar-tabs">
+      <button class="tab-btn active" data-tab="toc" onclick="switchTab('toc')">목차</button>
+      <button class="tab-btn" data-tab="explorer" onclick="switchTab('explorer')">탐색기</button>
+    </div>
+
+    <div id="panel-toc">
+      <div class="toc-label">목차</div>
+      <ul id="toc-list"></ul>
+    </div>
+
+    <div id="panel-explorer">
+      <div id="explorer-root-label">폴더를 선택하세요</div>
+      <div id="explorer-tree">
+        <div class="tree-hint">위의 <strong>폴더 열기</strong>로<br>디렉토리를 탐색하세요.</div>
+      </div>
+    </div>
   </nav>
 
   <div id="scroll-area"
@@ -735,7 +873,8 @@ marked.setOptions({ renderer, breaks: true, gfm: true });
 
 /* ── State ── */
 let md = '';
-let tocOpen = true;
+let sidebarOpen = true;
+let activeTab = 'toc';
 let theme = localStorage.getItem('theme') || 'auto'; // 'auto' | 'light' | 'dark'
 const sysDark = window.matchMedia('(prefers-color-scheme: dark)');
 
@@ -824,9 +963,99 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ── Actions ── */
-function toggleToc()   { tocOpen = !tocOpen; document.getElementById('toc').classList.toggle('closed', !tocOpen); }
-function goTop()       { document.getElementById('scroll-area').scrollTo({ top:0, behavior:'smooth' }); }
-function printDoc()    { window.print(); }
+function toggleToc() {
+  sidebarOpen = !sidebarOpen;
+  document.getElementById('sidebar').classList.toggle('closed', !sidebarOpen);
+}
+function goTop()    { document.getElementById('scroll-area').scrollTo({ top:0, behavior:'smooth' }); }
+function printDoc() { window.print(); }
+
+/* ── Sidebar tabs ── */
+function switchTab(tab) {
+  activeTab = tab;
+  document.getElementById('panel-toc').style.display      = tab === 'toc'      ? '' : 'none';
+  document.getElementById('panel-explorer').style.display = tab === 'explorer' ? 'flex' : 'none';
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  if (!sidebarOpen) {
+    sidebarOpen = true;
+    document.getElementById('sidebar').classList.remove('closed');
+  }
+}
+
+/* ── New window ── */
+async function newWindow() {
+  if (window.pywebview) await window.pywebview.api.new_window(null);
+}
+
+/* ── Directory explorer ── */
+async function openFolder() {
+  if (!window.pywebview) return;
+  const res = JSON.parse(await window.pywebview.api.open_folder_dialog());
+  if (res.cancelled || res.error) return;
+  document.getElementById('explorer-root-label').textContent = res.path.split('/').pop() || res.path;
+  switchTab('explorer');
+  await loadDir(res.path, document.getElementById('explorer-tree'), 0);
+}
+
+async function loadDir(path, container, depth) {
+  container.innerHTML = '<div class="tree-hint">로드 중…</div>';
+  const res = JSON.parse(await window.pywebview.api.list_directory(path));
+  container.innerHTML = '';
+  if (res.error) {
+    container.innerHTML = `<div class="tree-hint">${res.error}</div>`;
+    return;
+  }
+  if (!res.entries.length) {
+    container.innerHTML = '<div class="tree-hint">.md 파일 없음</div>';
+    return;
+  }
+  res.entries.forEach(entry => renderTreeEntry(entry, container, depth));
+}
+
+function renderTreeEntry(entry, container, depth) {
+  const item = document.createElement('div');
+  item.className = 'tree-item tree-' + entry.type;
+
+  const row = document.createElement('div');
+  row.className = 'tree-row';
+  row.style.paddingLeft = `${12 + depth * 14}px`;
+
+  if (entry.type === 'dir') {
+    row.innerHTML = `<span class="tree-arrow">▶</span><span class="tree-icon">📁</span><span class="tree-name">${entry.name}</span>`;
+    const children = document.createElement('div');
+    children.className = 'tree-children';
+    item.appendChild(row);
+    item.appendChild(children);
+
+    row.addEventListener('click', async () => {
+      const open = children.classList.toggle('open');
+      row.querySelector('.tree-arrow').textContent = open ? '▼' : '▶';
+      row.querySelector('.tree-icon').textContent  = open ? '📂' : '📁';
+      if (open && !children.dataset.loaded) {
+        children.dataset.loaded = '1';
+        await loadDir(entry.path, children, depth + 1);
+      }
+    });
+  } else {
+    row.innerHTML = `<span class="tree-arrow" style="opacity:0">▶</span><span class="tree-icon">📄</span><span class="tree-name">${entry.name}</span>`;
+    item.appendChild(row);
+
+    row.addEventListener('click', async (e) => {
+      if (!window.pywebview) return;
+      if (e.metaKey) {
+        // Cmd+click → new window
+        await window.pywebview.api.new_window(entry.path);
+      } else {
+        const data = JSON.parse(await window.pywebview.api.read_file(entry.path));
+        load(data);
+        document.querySelectorAll('.tree-item.active').forEach(el => el.classList.remove('active'));
+        item.classList.add('active');
+      }
+    });
+  }
+
+  container.appendChild(item);
+}
 
 function copyCode(btn) {
   const code = btn.closest('.code-wrapper').querySelector('code');
@@ -863,8 +1092,15 @@ function onDragLeave()  { document.getElementById('drop-overlay').classList.remo
 async function onDrop(e) {
   e.preventDefault();
   document.getElementById('drop-overlay').classList.remove('on');
-  const f = e.dataTransfer.files[0];
-  if (f) load({ content: await f.text(), filename: f.name });
+  const files = [...e.dataTransfer.files].filter(f => /\.(md|markdown)$/i.test(f.name));
+  if (!files.length) return;
+  load({ content: await files[0].text(), filename: files[0].name });
+  for (let i = 1; i < files.length; i++) {
+    if (window.pywebview) {
+      // Path not accessible via drag in webview — open dialog for extras
+      await window.pywebview.api.new_window(null);
+    }
+  }
 }
 
 /* ── Keyboard shortcuts ── */
@@ -872,6 +1108,7 @@ document.addEventListener('keydown', e => {
   const m = e.metaKey || e.ctrlKey;
   if (m && e.key === 'p') { e.preventDefault(); if (md) printDoc(); }
   if (m && e.key === 'o') { e.preventDefault(); openFile(); }
+  if (m && e.key === 'n') { e.preventDefault(); newWindow(); }
 });
 </script>
 </body>
